@@ -1,6 +1,7 @@
 package pkgApp.controller;
 
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
@@ -8,8 +9,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
 import pkgApp.RetirementApp;
+import pkgCore.Retirement;
 
 public class RetirementController implements Initializable {
 
@@ -34,6 +37,14 @@ public class RetirementController implements Initializable {
 	@FXML
 	private TextField txtMonthlySSI;
 	
+	@FXML
+	private Label labelAmountToSave;
+	
+	@FXML
+	private Label labelTotalAmountSaved;
+	
+	private static DecimalFormat MONEY_FORMAT = new DecimalFormat("$###,###,###,###.00");
+	
 	public RetirementApp getMainApp() {
 		return mainApp;
 	}
@@ -43,29 +54,41 @@ public class RetirementController implements Initializable {
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {		
+	public void initialize(URL location, ResourceBundle resources) {
+		this.labelAmountToSave.setText("");
+		this.labelTotalAmountSaved.setText("");
 	}
 	
 	@FXML
 	public void btnClear(ActionEvent event) {
-		System.out.println("Clear pressed");
 		
-		txtYearsToWork.setText("");
-		txtSavingAnnualReturn.setText("");
-		txtYearsRetired.setText("");
-		txtReturningAnnualReturn.setText("");
-		txtRequiredIncome.setText("");
-		txtMonthlySSI.setText("");
-		//	TODO: Clear all the text inputs
+		this.txtYearsToWork.setText("");
+		this.txtSavingAnnualReturn.setText("");
+		this.txtYearsRetired.setText("");
+		this.txtReturningAnnualReturn.setText("");
+		this.txtRequiredIncome.setText("");
+		this.txtMonthlySSI.setText("");
+		this.labelAmountToSave.setText("");
+		this.labelTotalAmountSaved.setText("");
+		
 	}
 	
 	@FXML
 	public void btnCalculate(ActionEvent event) {
 		
 		if (isInputValid()) {
-			
+			int yearsToWork = Integer.parseInt(this.txtYearsToWork.getText());
+			double annualReturnWorking = Integer.parseInt(this.txtSavingAnnualReturn.getText()) / 100.00;
+			int yearsRetired = Integer.parseInt(this.txtYearsRetired.getText());
+			double annualReturnRetired = Integer.parseInt(this.txtReturningAnnualReturn.getText()) / 100.00;
+			double requiredIncome = Double.parseDouble(this.txtRequiredIncome.getText());			
+			double ssiIncome = Double.parseDouble(this.txtMonthlySSI.getText());
+			Retirement retirement = 
+					new Retirement(yearsToWork, annualReturnWorking, yearsRetired, 
+							annualReturnRetired, requiredIncome, ssiIncome);
+			this.labelAmountToSave.setText(MONEY_FORMAT.format(retirement.AmountToSave()));
+			this.labelTotalAmountSaved.setText(MONEY_FORMAT.format(retirement.TotalAmountSaved()));
 		}
-		//	TODO: Call AmountToSave and TotalAmountSaved and populate 
 		
 	}
 	
@@ -74,36 +97,36 @@ public class RetirementController implements Initializable {
 		String errorMessage = "";
 		if (txtYearsToWork.getText() == null || 
 			txtYearsToWork.getText().length() == 0 ||
-			!isValidNumber(txtYearsToWork.getText(), 0, 65)) {
-			errorMessage += "Years of work is not valid!\n";
+			!isValidNumber(txtYearsToWork.getText(), 1, 65)) {
+			errorMessage += "Years of work is not valid! Use 1 - 65.\n";
 		}
 		if (txtSavingAnnualReturn.getText() == null || 
 			txtSavingAnnualReturn.getText().length() == 0 ||
 			!isValidNumber(txtSavingAnnualReturn.getText(), 0, 20)) {
-			errorMessage += "Saving Annual Return is not valid!\n";
+			errorMessage += "Saving Annual Return is not valid! Use 0 - 20.\n";
 		}
 		if (txtYearsRetired.getText() == null || 
 			txtYearsRetired.getText().length() == 0 ||
-			!isValidNumber(txtYearsRetired.getText(), 0, 65)) {
-			errorMessage += "Years Retired is not valid!\n";
+			!isValidNumber(txtYearsRetired.getText(), 1, 100)) {
+			errorMessage += "Years Retired is not valid! Use 1 - 100.\n";
 		}
 		if (txtReturningAnnualReturn.getText() == null || 
 			txtReturningAnnualReturn.getText().length() == 0 ||
 			!isValidNumber(txtReturningAnnualReturn.getText(), 0, 3)) {
-			errorMessage += "Returning Annual Return is not valid!\n";
+			errorMessage += "Returning Annual Return is not valid! Use 1 - 3.\n";
 		}
 		if (txtRequiredIncome.getText() == null || 
 			txtRequiredIncome.getText().length() == 0 ||
-			!isValidNumber(txtRequiredIncome.getText(), 0, 100)) {
-			errorMessage += "Required Income is not valid!\n";
+			!isValidNumber(txtRequiredIncome.getText(), 0, 100000)) {
+			errorMessage += "Required Income is not valid! Use any positive number.\n";
 		}
 		if (txtMonthlySSI.getText() == null || 
 			txtMonthlySSI.getText().length() == 0 ||
-			!isValidNumber(txtMonthlySSI.getText(), 0, 100)) {
-			errorMessage += "Monthly SSI is not valid!\n";
+			!isValidNumber(txtMonthlySSI.getText(), 0, 2642)) {
+			errorMessage += "Monthly SSI is not valid! Use 0 - 2642.\n";
 		}
 		
-		// TODO validate all fields
+	
 		
 		if (errorMessage.length() == 0) {
             return true;

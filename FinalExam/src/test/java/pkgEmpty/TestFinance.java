@@ -3,9 +3,14 @@ package pkgEmpty;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import pkgCore.Retirement;
+
 import org.apache.poi.ss.formula.functions.*;
 public class TestFinance {
 
+	double PV = -1454485.5484009797;
+	double PMT = 554.1291237405718;
 	
 	@Test 
 	public void TestAmounts()
@@ -22,6 +27,9 @@ public class TestFinance {
 		
 		System.out.println(pv);
 		System.out.println(pmt);
+		
+		assertEquals(pv, PV, 0.001);
+		assertEquals(pmt, PMT, 0.001);
 	}
 	
 	
@@ -54,6 +62,13 @@ public class TestFinance {
 		
 		
 		
+	}
+	
+	@Test
+	public void TestRetirement() {
+		Retirement r = new Retirement(40, 0.07, 20, 0.02, 10000.00, 2642.00);
+		assertEquals(r.TotalAmountSaved(), PV, 0.001);
+		assertEquals(r.AmountToSave(), PMT, 0.001);
 	}
 
 }

@@ -1,5 +1,7 @@
 package pkgCore;
 
+import org.apache.poi.ss.formula.functions.FinanceLib;
+
 public class Retirement {
 
 	private int iYearsToWork;
@@ -113,18 +115,25 @@ public class Retirement {
 
 	public double AmountToSave()
 	{
-		//TODO: Determine the amount to save each month based on TotalAmountSaved, YearsToWork
+		//Determine the amount to save each month based on TotalAmountSaved, YearsToWork
 		//		and Annual return while working
 		
-		
-		return 0;
+		double dMonthsToWork = this.iYearsToWork * 12;
+		double rAnnualReturnWorking = this.dAnnualReturnWorking / 12;
+		double pmt = FinanceLib.pmt(rAnnualReturnWorking, dMonthsToWork, 0, TotalAmountSaved(), false);	
+		return pmt;
 	}
 	
 	public double TotalAmountSaved()
 	{
-		//	TODO: Determine amount to be saved based on Monthly SSI, Required Income, Annual return during retirement
+		//	Determine amount to be saved based on Monthly SSI, Required Income, Annual return during retirement
 		//		and number of years retired.
 		//
-		return 0;
+		double dMonthsRetired = this.iYearsRetired * 12;
+		double rAnnaulReturnRetired =this.dAnnualReturnRetired / 12;
+		double dRequiredIncome = this.dRequiredIncome;
+		double dMonthlySSI = this.dMonthlySSI;
+        double pv = FinanceLib.pv(rAnnaulReturnRetired, dMonthsRetired, dRequiredIncome - dMonthlySSI, 0, false);
+        return pv;
 	}
 }
